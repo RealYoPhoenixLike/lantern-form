@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Lantern Order Form</title>
+  <style>
+    body {
+      background-color: lightpink;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+
+    .lanterns {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px;
+      margin-top: 20px;
+      flex-wrap: wrap;
+    }
+
+    .lantern {
+      text-align: center;
+    }
+
+    .lantern img {
+      width: 150px;
+      height: auto;
+      border: 2px solid #333;
+      margin-bottom: 8px;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 200px;
+      padding: 8px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #summary {
+      margin-top: 30px;
+      padding: 15px;
+      border: 2px solid #333;
+      background-color: #e0ffe0;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Lantern Order Form</h1>
+
+  <label for="name">Your Name:</label><br>
+  <input type="text" id="name" placeholder="Enter your name" required><br>
+
+  <label for="number">Your Number:</label><br>
+  <input type="text" id="number" placeholder="Enter your number" required><br>
+
+  <label for="email">Your Email:</label><br>
+  <input type="text" id="email" placeholder="Enter your email" required><br>
+
+  <h3>Here are some of the lanterns we have made!</h3>
+
+  <div class="lanterns">
+    <div class="lantern">
+      <img src="images/greenlantern.png" alt="Green Lantern">
+      <label>Quantity:</label><br>
+      <input type="number" id="quantity1" placeholder="0" value="0">
+    </div>
+
+    <div class="lantern">
+      <img src="images/orangelantern.png" alt="Orange Lantern">
+      <label>Quantity:</label><br>
+      <input type="number" id="quantity2" placeholder="0" value="0">
+    </div>
+
+    <div class="lantern">
+      <img src="images/pinklantern.png" alt="Pink Lantern">
+      <label>Quantity:</label><br>
+      <input type="number" id="quantity3" placeholder="0" value="0">
+    </div>
+
+    <div class="lantern">
+      <img src="images/purplelantern.png" alt="Purple Lantern">
+      <label>Quantity:</label><br>
+      <input type="number" id="quantity4" placeholder="0" value="0">
+    </div>
+  </div>
+
+  <div id="summary"></div>
+
+  <form action="https://formsubmit.co/bedwarssweat314@gmail.com" method="POST" onsubmit="return fillHiddenFields()">
+    <input type="hidden" name="Name" id="hiddenName">
+    <input type="hidden" name="Phone" id="hiddenNumber">
+    <input type="hidden" name="Email" id="hiddenEmail">
+    <input type="hidden" name="Order Number" id="hiddenOrderNum">
+    <input type="hidden" name="Summary" id="hiddenSummary">
+    <input type="hidden" name="_cc" id="ccField">
+    <input type="hidden" name="_subject" id="subjectField" value="Lantern Order Summary">
+    <input type="hidden" name="_captcha" value="false">
+
+    <button type="submit">Send Summary to Email</button>
+  </form>
+
+  <script>
+    function generateOrderNumber() {
+      let lastOrder = localStorage.getItem("lastOrderNum");
+      let nextOrderNum = lastOrder ? parseInt(lastOrder) + 1 : 1;
+      localStorage.setItem("lastOrderNum", nextOrderNum);
+      return "ORD-" + String(nextOrderNum).padStart(3, '0');
+    }
+
+    function fillHiddenFields() {
+      const name = document.getElementById("name").value.trim();
+      const number = document.getElementById("number").value.trim();
+      const email = document.getElementById("email").value.trim();
+
+      if (!name || !number || !email) {
+        alert("Please fill out your name, email, and phone number.");
+        return false;
+      }
+
+      const q1 = parseInt(document.getElementById("quantity1").value) || 0;
+      const q2 = parseInt(document.getElementById("quantity2").value) || 0;
+      const q3 = parseInt(document.getElementById("quantity3").value) || 0;
+      const q4 = parseInt(document.getElementById("quantity4").value) || 0;
+
+      const cost1 = q1 * 15;
+      const cost2 = q2 * 15;
+      const cost3 = q3 * 15;
+      const cost4 = q4 * 15;
+      const total = cost1 + cost2 + cost3 + cost4;
+
+      const orderNumber = generateOrderNumber();
+      const format = num => "$" + num.toFixed(2);
+
+      const summary = `
+Order Number: ${orderNumber}
+
+Green Lantern: ${q1} x $15 = ${format(cost1)}
+Orange Lantern: ${q2} x $15 = ${format(cost2)}
+Pink Lantern: ${q3} x $15 = ${format(cost3)}
+Purple Lantern: ${q4} x $15 = ${format(cost4)}
+
+Total Cost: ${format(total)}
+      `;
+
+      document.getElementById("summary").innerHTML = `
+        <h2>Order Summary</h2>
+        <p><strong>Order Number:</strong> ${orderNumber}</p>
+        <p><strong>Name:</strong> ${name}</p>
+        <p><strong>Number:</strong> ${number}</p>
+        <p><strong>Email:</strong> ${email}</p>
+        <pre>${summary}</pre>
+      `;
+
+      document.getElementById("hiddenName").value = name;
+      document.getElementById("hiddenNumber").value = number;
+      document.getElementById("hiddenEmail").value = email;
+      document.getElementById("hiddenSummary").value = summary;
+      document.getElementById("hiddenOrderNum").value = orderNumber;
+      document.getElementById("ccField").value = email;
+
+      return true;
+    }
+  </script>
+
+</body>
+</html>
